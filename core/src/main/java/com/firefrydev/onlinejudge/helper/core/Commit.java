@@ -4,12 +4,12 @@ package com.firefrydev.onlinejudge.helper.core;
  * @immutable
  */
 public final class Commit {
-    private final String authorId;
+    private final Author authorId;
     private final String problemId;
     private final Language language;
     private final String source;
 
-    public Commit(String authorId, String problemId, Language language, String source) {
+    public Commit(Author authorId, String problemId, Language language, String source) {
         if (authorId == null || problemId == null || language == null || source == null) {
             throw new NullPointerException();
         }
@@ -19,7 +19,7 @@ public final class Commit {
         this.source = source;
     }
 
-    public String getAuthorId() {
+    public Author getAuthor() {
         return authorId;
     }
 
