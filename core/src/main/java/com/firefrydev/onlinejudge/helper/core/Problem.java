@@ -55,4 +55,21 @@ public final class Problem {
     public List<SampleTest> getSampleTests() {
         return new LinkedList<SampleTest>(sampleTests);
     }
+
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Problem:\n");
+        stringBuilder.append(getId());
+        stringBuilder.append("\n\nDescription:\n");
+        stringBuilder.append(getDescription());
+        stringBuilder.append("\n");
+        for (SampleTest sampleTest : getSampleTests()) {
+            stringBuilder.append("\nInput:\n");
+            stringBuilder.append(sampleTest.getInput());
+            stringBuilder.append("\n\nOutput:\n");
+            stringBuilder.append(sampleTest.getOutput());
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
+    }
 }

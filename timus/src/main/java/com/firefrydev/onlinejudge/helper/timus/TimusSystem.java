@@ -14,14 +14,15 @@ public class TimusSystem implements OnlineJudgeSystem {
     private static final String CHECK_URL = "http://acm.timus.ru/status.aspx";
 
     private static final HashMap<Language, LanguageSettings> LANGUAGE_SETTINGS = new HashMap<Language, LanguageSettings>() {{
-        put(Language.JAVA, new LanguageSettings("12"));
-        put(Language.PYTHON27, new LanguageSettings("16"));
+        put(Language.JAVA, new LanguageSettings("12", "java", "java"));
+        put(Language.PYTHON27, new LanguageSettings("16", "python", "py"));
     }};
     public static final int SLEEP_INTERVAL = 500;
 
     @Override
     public Problem getProblem(String id) throws IOException {
-        Document doc = Jsoup.connect(LOAD_URL_PREFIX + id)
+        Document doc =
+                Jsoup.connect(LOAD_URL_PREFIX + id)
                             .header("Accept-Language", "ru-RU,ru;")
                             .get();
         String title = doc.getElementsByClass("problem_title").first().text();
@@ -37,7 +38,8 @@ public class TimusSystem implements OnlineJudgeSystem {
 
     @Override
     public CommitResult perform(Commit commit) throws IOException, InterruptedException {
-        Document doc = Jsoup.connect("http://acm.timus.ru/submit.aspx")
+        Document doc =
+                Jsoup.connect("http://acm.timus.ru/submit.aspx")
                             .header("Accept-Language", "ru-RU,ru;")
                             .data("Action", "submit")
                             .data("SpaceID", "1")
@@ -67,7 +69,8 @@ public class TimusSystem implements OnlineJudgeSystem {
     }
 
     private CommitResult checkForResult(Commit commit, String commitId) throws IOException {
-        Document doc = Jsoup.connect(CHECK_URL)
+        Document doc =
+                Jsoup.connect(CHECK_URL)
                             .header("space", "1")
                             .header("num", String.valueOf(commit.getProblemId()))
                             .header("author", String.valueOf(commit.getAuthor().getId()))
