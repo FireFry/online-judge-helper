@@ -4,7 +4,7 @@ public final class TestResult {
     private final boolean isPassed;
     private final String verdict;
 
-    public TestResult(boolean passed, String verdict) {
+    public TestResult(String id, boolean passed, String verdict) {
         isPassed = passed;
         this.verdict = verdict;
     }

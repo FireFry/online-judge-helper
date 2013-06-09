@@ -1,10 +1,12 @@
 package com.firefrydev.onlinejudge.workspace;
 
 import com.firefrydev.onlinejudge.helper.core.*;
+import com.firefrydev.onlinejudge.workspace.utils.ClassLoadUtils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,9 +36,9 @@ public class DirectoryBasedWorkspace implements Workspace {
         if (dir.exists()) {
             throw new IllegalStateException("Directory is already exists!");
         }
+        addSetting("language", language.toString());
         initProblem(dir);
         createLanguageTemplate(dir, language);
-        addSetting("language", language.toString());
     }
 
     private void addSetting(String key, String value) throws IOException {
@@ -89,8 +91,8 @@ public class DirectoryBasedWorkspace implements Workspace {
         for (SampleTest sampleTest : problem.getSampleTests()) {
             File testDir = new File(tests, String.valueOf(index));
             if (!testDir.exists()) {
-                FileUtils.writeStringToFile(new File(testDir, "input.txt"), sampleTest.getInput() + "\n");
-                FileUtils.writeStringToFile(new File(testDir, "output.txt"), sampleTest.getOutput() + "\n");
+                FileUtils.writeStringToFile(new File(testDir, "input.txt"), sampleTest.getInput() + "\r\n");
+                FileUtils.writeStringToFile(new File(testDir, "output.txt"), sampleTest.getOutput() + "\r\n");
             }
             index++;
         }
@@ -111,7 +113,7 @@ public class DirectoryBasedWorkspace implements Workspace {
             throw new IllegalStateException("Cannot find a template: " + resourceName);
         }
         BufferedReader reader = new BufferedReader(new InputStreamReader(templateStream));
-        File problemSource = new File(dir, getProblemSourceName(languageSettings));
+        File problemSource = new File(dir, getProblemFileName());
         problemSource.createNewFile();
         PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(problemSource)));
         String line;
@@ -129,12 +131,56 @@ public class DirectoryBasedWorkspace implements Workspace {
 
     @Override
     public TestResult[] test() {
-        return new TestResult[0];  //To change body of implemented methods use File | Settings | File Templates.
+        Class solutionClass;
+        try {
+            solutionClass = ClassLoadUtils.load(new File(workspaceDir, problemId).getPath(), getProblemClassName());
+        } catch (Exception e) {
+            return new TestResult[] {new TestResult("unknown", false, "Failed to load solution class: " + e)};
+        }
+        return test(solutionClass);
     }
 
     @Override
     public TestResult[] test(Class solution) {
-        return new TestResult[0];  //To change body of implemented methods use File | Settings | File Templates.
+        try {
+            File[] tests = new File(new File(workspaceDir, problemId), "tests").listFiles();
+            List<TestResult> results = new LinkedList<TestResult>();
+            for (File test : tests) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                FileInputStream fileInputStream = new FileInputStream(new File(test, "input.txt"));
+                Object solver = solution.getConstructor(InputStream.class, OutputStream.class).newInstance(fileInputStream, byteArrayOutputStream);
+                solution.getMethod("run").invoke(solver);
+                fileInputStream.close();
+                byteArrayOutputStream.close();
+                String output = byteArrayOutputStream.toString();
+                String expectedOutput = FileUtils.readFileToString(new File(test, "output.txt"));
+                if (expectedOutput.equals(output)) {
+                    results.add(new TestResult(test.getName(), true, "Accepted"));
+                } else {
+                    TestResult result = getTestResult(test, output, expectedOutput);
+                    results.add(result);
+                }
+            }
+            return results.toArray(new TestResult[results.size()]);
+        } catch (Exception e) {
+            return new TestResult[] {new TestResult("unknown", false, "Exception while testing the solution class: " + e)};
+        }
+    }
+
+    private TestResult getTestResult(File test, String output, String expectedOutput) {
+        String[] lines1 = output.split("\n");
+        String[] lines2 = expectedOutput.split("\n");
+        int i;
+        for (i = 0; i < Math.min(lines1.length, lines2.length); i++) {
+            if (!lines1[i].equals(lines2[i])) {
+                return new TestResult(test.getName(), false, "Outputs are not equals" +
+                        "\nExpected: " + lines2[i] +
+                        "\nFound:    " + lines1[i]);
+            }
+        }
+        return new TestResult(test.getName(), false, "Outputs are not equals" +
+                "\nExpected: " + (i < lines2.length ? lines2[i] : null) +
+                "\nFound:    " + (i < lines1.length ? lines1[i] : null));
     }
 
     @Override
@@ -144,13 +190,16 @@ public class DirectoryBasedWorkspace implements Workspace {
             throw new IllegalStateException("Settings file is broken");
         }
         Language language = Language.valueOf(lang);
-        LanguageSettings languageSettings = onlineJudgeSystem.getLanguageSettings(language);
-        String source = FileUtils.readFileToString(new File(new File(workspaceDir, problemId), getProblemSourceName(languageSettings)));
+        String source = FileUtils.readFileToString(new File(new File(workspaceDir, problemId), getProblemFileName()));
         return onlineJudgeSystem.perform(new Commit(author, problemId, language, source));
     }
 
-    private String getProblemSourceName(LanguageSettings languageSettings) {
-        return "Problem" + problemId + "." + languageSettings.getExtension();
+    private String getProblemFileName() throws IOException {
+        return getProblemClassName() + "." + onlineJudgeSystem.getLanguageSettings(Language.valueOf(readSettings().get("language"))).getExtension();
+    }
+
+    private String getProblemClassName() {
+        return "Problem" + problemId;
     }
 }
 

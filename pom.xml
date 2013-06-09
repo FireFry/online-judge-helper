@@ -12,6 +12,7 @@
 		<module>core</module>
 		<module>timus</module>
 		<module>workspace</module>
+		<module>main</module>
 	</modules>
 	<dependencies>
 		<dependency>

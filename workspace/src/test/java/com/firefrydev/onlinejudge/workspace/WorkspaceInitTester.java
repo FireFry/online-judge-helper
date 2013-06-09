@@ -85,10 +85,10 @@ public class WorkspaceInitTester extends Assert {
 
         File test0 = new File(new File(problemPath, "tests"), "0");
         String sampleInput = FileUtils.readFileToString(new File(test0, "input.txt"));
-        assertEquals("1 5\n", sampleInput);
+        assertEquals("1 5\r\n", sampleInput);
 
         String sampleOutput = FileUtils.readFileToString(new File(test0, "output.txt"));
-        assertEquals("6\n", sampleOutput);
+        assertEquals("6\r\n", sampleOutput);
 
         File settings = new File(problemPath, "settings.txt");
         assertTrue(settings.exists());
