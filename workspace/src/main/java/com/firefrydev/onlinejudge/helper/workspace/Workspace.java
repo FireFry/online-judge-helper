@@ -1,4 +1,4 @@
-package com.firefrydev.onlinejudge.workspace;
+package com.firefrydev.onlinejudge.helper.workspace;
 
 import com.firefrydev.onlinejudge.helper.core.CommitResult;
 import com.firefrydev.onlinejudge.helper.core.Language;

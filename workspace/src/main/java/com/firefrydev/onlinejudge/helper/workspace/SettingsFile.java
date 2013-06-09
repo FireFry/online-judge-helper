@@ -1,4 +1,4 @@
-package com.firefrydev.onlinejudge.workspace;
+package com.firefrydev.onlinejudge.helper.workspace;
 
 import org.apache.commons.io.FileUtils;
 

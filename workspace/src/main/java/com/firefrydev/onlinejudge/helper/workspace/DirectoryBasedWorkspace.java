@@ -1,7 +1,7 @@
-package com.firefrydev.onlinejudge.workspace;
+package com.firefrydev.onlinejudge.helper.workspace;
 
 import com.firefrydev.onlinejudge.helper.core.*;
-import com.firefrydev.onlinejudge.workspace.utils.ClassLoadUtils;
+import com.firefrydev.onlinejudge.helper.workspace.utils.ClassLoadUtils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;

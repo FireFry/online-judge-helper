@@ -1,7 +1,6 @@
-package com.firefrydev.onlinejudge.workspace;
+package com.firefrydev.onlinejudge.helper.workspace;
 
 import com.firefrydev.onlinejudge.helper.core.Author;
-import com.firefrydev.onlinejudge.helper.core.CommitResult;
 import com.firefrydev.onlinejudge.helper.core.Language;
 import com.firefrydev.onlinejudge.helper.timus.TimusSystem;
 import org.apache.commons.io.FileUtils;
