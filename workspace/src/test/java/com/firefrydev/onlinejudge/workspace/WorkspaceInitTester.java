@@ -90,7 +90,7 @@ public class WorkspaceInitTester extends Assert {
         String sampleOutput = FileUtils.readFileToString(new File(test0, "output.txt"));
         assertEquals("6\r\n", sampleOutput);
 
-        File settings = new File(problemPath, "settings.txt");
+        File settings = new File(new File(problemPath, ".ojh"), "settings.txt");
         assertTrue(settings.exists());
         assertEquals("language = JAVA\n", FileUtils.readFileToString(settings));
     }

@@ -7,11 +7,11 @@ import java.io.IOException;
 
 public interface Workspace {
 
-    void switchTo(String problemId);
+    void switchTo(String problemId) throws IOException;
 
     void init(Language language) throws IOException;
 
-    String getCurrentProblem();
+    String getProblemId() throws IOException;
 
     TestResult[] test();
 

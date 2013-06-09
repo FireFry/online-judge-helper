@@ -5,94 +5,76 @@ import com.firefrydev.onlinejudge.workspace.utils.ClassLoadUtils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class DirectoryBasedWorkspace implements Workspace {
+    public static final String CURRENT_PROBLEM_ID_KEY = "currentProblemId";
+    public static final String PROBLEM_CLASS_NAME_PREFIX = "Problem";
+    public static final String LANGUAGE_KEY = "language";
+    public static final String SETTINGS_FILE_NAME = "settings.txt";
+    public static final String PRIVATE_DIR_NAME = ".ojh";
+    public static final String DESCRIPTION_FILE_NAME = "Description.txt";
+    public static final String TESTS_DIR_NAME = "tests";
+    public static final String INPUT_FILE_NAME = "input.txt";
+    public static final String OUTPUT_FILE_NAME = "output.txt";
+    public static final String TEMPLATES_DIR_NAME = "templates";
+    public static final String TEMPLATE_FILE_NAME = "template.txt";
+    public static final String ID_KEY = "%id%";
+
     private final OnlineJudgeSystem onlineJudgeSystem;
     private final File workspaceDir;
     private final Author author;
-    private String problemId;
+    private final SettingsFile settings;
 
     public DirectoryBasedWorkspace(OnlineJudgeSystem onlineJudgeSystem, File workspaceDir, Author author) {
         this.onlineJudgeSystem = onlineJudgeSystem;
         this.workspaceDir = workspaceDir;
         this.author = author;
+        this.settings = new SettingsFile(new File(new File(workspaceDir, PRIVATE_DIR_NAME), SETTINGS_FILE_NAME));
     }
 
     @Override
-    public void switchTo(String problemId) {
-        this.problemId = problemId;
+    public void switchTo(String problemId) throws IOException {
+        setProblemId(problemId);
     }
 
     @Override
     public void init(Language language) throws IOException {
-        if (problemId == null) {
+        if (getProblemId() == null) {
             throw new NullPointerException("Current problem is undefined");
         }
-        File dir = new File(workspaceDir, problemId);
+        File dir = new File(workspaceDir, getProblemId());
         if (dir.exists()) {
             throw new IllegalStateException("Directory is already exists!");
         }
-        addSetting("language", language.toString());
+        getProblemSettings().put(LANGUAGE_KEY, language.toString());
         initProblem(dir);
         createLanguageTemplate(dir, language);
     }
 
-    private void addSetting(String key, String value) throws IOException {
-        Map<String, String> map = readSettings();
-        map.put(key, value);
-        writeSettings(map);
+    private SettingsFile getProblemSettings() throws IOException {
+        return new SettingsFile(new File(new File(getCurrentProblemPath(), PRIVATE_DIR_NAME), SETTINGS_FILE_NAME));
     }
 
-    private Map<String, String> readSettings() throws IOException {
-        File setting = new File(new File(workspaceDir, problemId), "settings.txt");
-        if (!setting.exists()) {
-            return new HashMap<String, String>();
-        }
-        List<String> lines = FileUtils.readLines(setting);
-        Map<String, String> map = new HashMap<String, String>(lines.size());
-        for (String line : lines) {
-            String[] values = line.split("=");
-            if (values.length == 2) {
-                map.put(values[0].trim(), values[1].trim());
-            }
-        }
-        return map;
-    }
-
-    private void writeSettings(Map<String, String> map) throws IOException {
-        File setting = new File(new File(workspaceDir, problemId), "settings.txt");
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String eachKey : map.keySet()) {
-            stringBuilder
-                    .append(eachKey)
-                    .append(" = ")
-                    .append(map.get(eachKey))
-                    .append("\n");
-        }
-        if (setting.exists()) {
-            FileUtils.forceDelete(setting);
-        }
-        FileUtils.writeStringToFile(setting, stringBuilder.toString());
+    private File getCurrentProblemPath() throws IOException {
+        return new File(workspaceDir, getProblemId());
     }
 
     private void initProblem(File dir) throws IOException {
-        Problem problem = onlineJudgeSystem.getProblem(problemId);
-        FileUtils.writeStringToFile(new File(dir, "description.txt"), problem.toString());
+        Problem problem = onlineJudgeSystem.getProblem(getProblemId());
+        FileUtils.writeStringToFile(new File(dir, DESCRIPTION_FILE_NAME), problem.toString());
         createTestFiles(dir, problem);
     }
 
     private void createTestFiles(File dir, Problem problem) throws IOException {
-        File tests = new File(dir, "tests");
+        File tests = new File(dir, TESTS_DIR_NAME);
         int index = 0;
         for (SampleTest sampleTest : problem.getSampleTests()) {
             File testDir = new File(tests, String.valueOf(index));
             if (!testDir.exists()) {
-                FileUtils.writeStringToFile(new File(testDir, "input.txt"), sampleTest.getInput() + "\r\n");
-                FileUtils.writeStringToFile(new File(testDir, "output.txt"), sampleTest.getOutput() + "\r\n");
+                FileUtils.writeStringToFile(new File(testDir, INPUT_FILE_NAME), sampleTest.getInput() + "\r\n");
+                FileUtils.writeStringToFile(new File(testDir, OUTPUT_FILE_NAME), sampleTest.getOutput() + "\r\n");
             }
             index++;
         }
@@ -102,11 +84,11 @@ public class DirectoryBasedWorkspace implements Workspace {
         LanguageSettings languageSettings = onlineJudgeSystem.getLanguageSettings(language);
         String resourceName =
                 new StringBuilder(File.separator)
-                        .append("templates")
+                        .append(TEMPLATES_DIR_NAME)
                         .append(File.separator)
                         .append(languageSettings.toString())
                         .append(File.separator)
-                        .append("template.txt")
+                        .append(TEMPLATE_FILE_NAME)
                         .toString();
         InputStream templateStream = getClass().getClassLoader().getResourceAsStream(resourceName);
         if (templateStream == null) {
@@ -118,24 +100,25 @@ public class DirectoryBasedWorkspace implements Workspace {
         PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(problemSource)));
         String line;
         while ((line = reader.readLine()) != null) {
-            printWriter.append(line.replace("%id%", String.valueOf(problemId)) + "\n");
+            printWriter.append(line.replace(ID_KEY, String.valueOf(getProblemId())) + "\n");
         }
         printWriter.close();
         reader.close();
     }
 
     @Override
-    public String getCurrentProblem() {
-        return problemId;
-    }
-
-    @Override
     public TestResult[] test() {
         Class solutionClass;
+        String problemClassName = null;
         try {
-            solutionClass = ClassLoadUtils.load(new File(workspaceDir, problemId).getPath(), getProblemClassName());
+            problemClassName= getProblemClassName();
+            solutionClass = Class.forName(problemClassName);
         } catch (Exception e) {
-            return new TestResult[] {new TestResult("unknown", false, "Failed to load solution class: " + e)};
+            try {
+                solutionClass = ClassLoadUtils.load(new File(workspaceDir, getProblemId()).getPath(), problemClassName);
+            } catch (Exception e2) {
+                return new TestResult[] {new TestResult("unknown", false, "Failed to load solution class: " + e2)};
+            }
         }
         return test(solutionClass);
     }
@@ -143,17 +126,17 @@ public class DirectoryBasedWorkspace implements Workspace {
     @Override
     public TestResult[] test(Class solution) {
         try {
-            File[] tests = new File(new File(workspaceDir, problemId), "tests").listFiles();
+            File[] tests = new File(new File(workspaceDir, getProblemId()), TESTS_DIR_NAME).listFiles();
             List<TestResult> results = new LinkedList<TestResult>();
             for (File test : tests) {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                FileInputStream fileInputStream = new FileInputStream(new File(test, "input.txt"));
+                FileInputStream fileInputStream = new FileInputStream(new File(test, INPUT_FILE_NAME));
                 Object solver = solution.getConstructor(InputStream.class, OutputStream.class).newInstance(fileInputStream, byteArrayOutputStream);
                 solution.getMethod("run").invoke(solver);
                 fileInputStream.close();
                 byteArrayOutputStream.close();
                 String output = byteArrayOutputStream.toString();
-                String expectedOutput = FileUtils.readFileToString(new File(test, "output.txt"));
+                String expectedOutput = FileUtils.readFileToString(new File(test, OUTPUT_FILE_NAME));
                 if (expectedOutput.equals(output)) {
                     results.add(new TestResult(test.getName(), true, "Accepted"));
                 } else {
@@ -185,21 +168,29 @@ public class DirectoryBasedWorkspace implements Workspace {
 
     @Override
     public CommitResult commit() throws IOException, InterruptedException {
-        String lang = readSettings().get("language");
+        String lang = getProblemSettings().get(LANGUAGE_KEY);
         if (lang == null) {
             throw new IllegalStateException("Settings file is broken");
         }
         Language language = Language.valueOf(lang);
-        String source = FileUtils.readFileToString(new File(new File(workspaceDir, problemId), getProblemFileName()));
-        return onlineJudgeSystem.perform(new Commit(author, problemId, language, source));
+        String source = FileUtils.readFileToString(new File(new File(workspaceDir, getProblemId()), getProblemFileName()));
+        return onlineJudgeSystem.perform(new Commit(author, getProblemId(), language, source));
     }
 
     private String getProblemFileName() throws IOException {
-        return getProblemClassName() + "." + onlineJudgeSystem.getLanguageSettings(Language.valueOf(readSettings().get("language"))).getExtension();
+        return getProblemClassName() + "." + onlineJudgeSystem.getLanguageSettings(Language.valueOf(getProblemSettings().get(LANGUAGE_KEY))).getExtension();
     }
 
-    private String getProblemClassName() {
-        return "Problem" + problemId;
+    private String getProblemClassName() throws IOException {
+        return PROBLEM_CLASS_NAME_PREFIX + getProblemId();
+    }
+
+    public String getProblemId() throws IOException {
+        return settings.get(CURRENT_PROBLEM_ID_KEY);
+    }
+
+    public void setProblemId(String problemId) throws IOException {
+        settings.put(CURRENT_PROBLEM_ID_KEY, problemId);
     }
 }
 
