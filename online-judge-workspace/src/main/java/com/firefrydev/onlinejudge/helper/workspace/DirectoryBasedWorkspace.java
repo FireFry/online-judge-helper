@@ -18,6 +18,7 @@ public class DirectoryBasedWorkspace implements Workspace {
     public static final String TESTS_DIR_NAME = "tests";
     public static final String INPUT_FILE_NAME = "input.txt";
     public static final String OUTPUT_FILE_NAME = "output.txt";
+    public static final String PROGRAM_OUTPUT_FILE_NAME = "program_output.txt";
     public static final String TEMPLATES_DIR_NAME = "templates";
     public static final String TEMPLATE_FILE_NAME = "template.txt";
     public static final String ID_KEY = "%id%";
@@ -132,6 +133,10 @@ public class DirectoryBasedWorkspace implements Workspace {
             File[] tests = new File(new File(workspaceDir, getProblemId()), TESTS_DIR_NAME).listFiles();
             List<TestResult> results = new LinkedList<TestResult>();
             for (File test : tests) {
+                File programOutputFile = new File(test, PROGRAM_OUTPUT_FILE_NAME);
+                if (programOutputFile.exists()) {
+                    FileUtils.forceDelete(programOutputFile);
+                }
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 FileInputStream fileInputStream = new FileInputStream(new File(test, INPUT_FILE_NAME));
                 Object solver = solution.getConstructor(InputStream.class, OutputStream.class).newInstance(fileInputStream, byteArrayOutputStream);
@@ -144,6 +149,9 @@ public class DirectoryBasedWorkspace implements Workspace {
                     results.add(TestResult.passed(test.getName(), "Accepted"));
                 } else {
                     TestResult result = getTestResult(test, output, expectedOutput);
+                    if (!result.isPassed()) {
+                        FileUtils.writeStringToFile(programOutputFile, output);
+                    }
                     results.add(result);
                 }
             }
