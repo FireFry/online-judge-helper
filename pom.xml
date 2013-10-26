@@ -13,6 +13,7 @@
 		<module>ojh-timus</module>
 		<module>ojh-manager</module>
 		<module>ojh-file-storage</module>
+		<module>ojh-java</module>
 	</modules>
 
 	<properties>

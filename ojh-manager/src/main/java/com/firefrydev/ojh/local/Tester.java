@@ -7,7 +7,7 @@ import com.firefrydev.ojh.utils.Callback;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Tester {
+class Tester {
     private static final int TOTAL_COMPONENTS_COUNT = 2;
 
     private final Manager manager;

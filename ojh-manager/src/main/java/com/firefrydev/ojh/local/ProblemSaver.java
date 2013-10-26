@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ProblemSaver {
+class ProblemSaver {
     public static final int TOTAL_PARTS_COUNT = 2;
 
     private final Manager manager;

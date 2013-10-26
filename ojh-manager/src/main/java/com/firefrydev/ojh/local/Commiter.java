@@ -4,7 +4,7 @@ import com.firefrydev.ojh.core.Commit;
 import com.firefrydev.ojh.core.Verdict;
 import com.firefrydev.ojh.utils.Callback;
 
-public class Commiter {
+class Commiter {
     private final Manager manager;
     private final String problemId;
     private final String authorId;

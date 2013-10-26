@@ -2,21 +2,27 @@ package com.firefrydev.ojh.core;
 
 public class FailedTest {
     private final Test test;
-    private final String wrongOutput;
+    private final Exception cause;
+    private final String output;
 
-    public FailedTest(Test test, String wrongOutput) {
-        if (test == null || wrongOutput == null) {
+    public FailedTest(Test test, Exception cause, String output) {
+        if (test == null || cause == null) {
             throw new NullPointerException();
         }
         this.test = test;
-        this.wrongOutput = wrongOutput;
+        this.cause = cause;
+        this.output = output;
     }
 
     public Test getTest() {
         return test;
     }
 
-    public String getWrongOutput() {
-        return wrongOutput;
+    public Exception getCause() {
+        return cause;
+    }
+
+    public String getOutput() {
+        return output;
     }
 }
