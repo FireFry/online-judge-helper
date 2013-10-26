@@ -28,7 +28,7 @@ public class Tester {
     }
 
     public void test() {
-        manager.getStorage().getSource(problemId, new Callback<String>() {
+        manager.getStorage().getSource(problemId, manager.getLanguageProvider().getSourceName(problemId), new Callback<String>() {
             @Override
             public void call(String source) {
                 Tester.this.source = source;

@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface Storage {
 
-    void saveSource(Source sourceTemplate, Runnable callback);
+    void saveSource(String problemId, Source sourceTemplate, Runnable callback);
 
-    void getSource(String problemId, Callback<String> callback);
+    void getSource(String problemId, String name, Callback<String> callback);
 
     void saveTests(String id, List<Test> tests, Runnable callback);
 

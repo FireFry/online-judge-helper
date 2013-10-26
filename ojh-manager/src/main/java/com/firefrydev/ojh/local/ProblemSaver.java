@@ -52,7 +52,7 @@ public class ProblemSaver {
     }
 
     private void onSourceTemplateReady(Source sourceTemplate) {
-        manager.getStorage().saveSource(sourceTemplate, storageCallback);
+        manager.getStorage().saveSource(problemId, sourceTemplate, storageCallback);
     }
 
     private void onPartProcessed() {

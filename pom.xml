@@ -12,7 +12,7 @@
 		<module>ojh-core</module>
 		<module>ojh-timus</module>
 		<module>ojh-manager</module>
-		<module>ojh-language-support</module>
+		<module>ojh-file-storage</module>
 	</modules>
 
 	<properties>

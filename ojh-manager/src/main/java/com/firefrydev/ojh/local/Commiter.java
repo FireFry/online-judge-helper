@@ -21,7 +21,7 @@ public class Commiter {
     }
 
     public void commit() {
-        manager.getStorage().getSource(problemId, new Callback<String>() {
+        manager.getStorage().getSource(problemId, manager.getLanguageProvider().getSourceName(problemId), new Callback<String>() {
             @Override
             public void call(String sourceCode) {
                 Commit commit = Commit.builder()
