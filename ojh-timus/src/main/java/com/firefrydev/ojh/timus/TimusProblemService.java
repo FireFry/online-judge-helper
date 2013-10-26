@@ -2,7 +2,8 @@ package com.firefrydev.ojh.timus;
 
 import com.firefrydev.ojh.core.Problem;
 import com.firefrydev.ojh.core.ProblemService;
-import com.firefrydev.ojh.timus.util.RetryOnFailRunnable;
+import com.firefrydev.ojh.utils.Callback;
+import com.firefrydev.ojh.utils.RetryOnFailRunnable;
 
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -16,15 +17,15 @@ public class TimusProblemService implements ProblemService {
     }
 
     @Override
-    public void loadProblem(String id, Callback callback) {
+    public void loadProblem(String id, Callback<Problem> callback) {
         executorService.execute(new LoadProblemTask(id, callback));
     }
 
     private class LoadProblemTask extends RetryOnFailRunnable {
         private final String id;
-        private final Callback callback;
+        private final Callback<Problem> callback;
 
-        public LoadProblemTask(String id, Callback callback) {
+        public LoadProblemTask(String id, Callback<Problem> callback) {
             super(maxTryCount);
             this.id = id;
             this.callback = callback;
@@ -33,7 +34,7 @@ public class TimusProblemService implements ProblemService {
         @Override
         public void unsafeRun() throws Exception {
             Problem problem = TimusProblemLoader.loadProblem(id);
-            callback.onProblemLoaded(problem);
+            callback.call(problem);
         }
 
         @Override

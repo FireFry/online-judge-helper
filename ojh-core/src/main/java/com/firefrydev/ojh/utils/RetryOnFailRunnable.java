@@ -1,4 +1,4 @@
-package com.firefrydev.ojh.timus.util;
+package com.firefrydev.ojh.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

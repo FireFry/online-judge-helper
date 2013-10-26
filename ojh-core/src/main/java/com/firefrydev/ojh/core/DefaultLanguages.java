@@ -4,6 +4,6 @@ public class DefaultLanguages {
 
     private DefaultLanguages() {}
 
-    public static final Language JAVA = new Language();
+    public static final Language JAVA = new Language(){};
 
 }

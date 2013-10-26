@@ -53,11 +53,11 @@ public class TimusVerifier {
         if (row != null) {
             Elements accepted = row.getElementsByClass("verdict_ac");
             if (accepted.size() > 0) {
-                return Verdict.accepted(commit.getProblemId());
+                return Verdict.accepted();
             }
             Elements rejected = row.getElementsByClass("verdict_rj");
             if (rejected.size() > 0) {
-                return Verdict.rejected(commit.getProblemId(), rejected.text());
+                return Verdict.rejected(rejected.text());
             }
         }
         return null;

@@ -11,7 +11,8 @@
 	<modules>
 		<module>ojh-core</module>
 		<module>ojh-timus</module>
-		<module>ojh-local</module>
+		<module>ojh-manager</module>
+		<module>ojh-language-support</module>
 	</modules>
 
 	<properties>

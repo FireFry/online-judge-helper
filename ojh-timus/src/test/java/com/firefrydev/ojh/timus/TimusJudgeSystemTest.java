@@ -1,6 +1,7 @@
 package com.firefrydev.ojh.timus;
 
 import com.firefrydev.ojh.core.*;
+import com.firefrydev.ojh.utils.Callback;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,9 +25,9 @@ public class TimusJudgeSystemTest {
     @Test(timeout = TIMEOUT)
     public void testLoadProblem() throws InterruptedException {
         final CountDownLatch loaded = new CountDownLatch(1);
-        onlineJudgeSystem.getProblemService().loadProblem("1000", new ProblemService.Callback() {
+        onlineJudgeSystem.getProblemService().loadProblem("1000", new Callback<Problem>() {
             @Override
-            public void onProblemLoaded(Problem problem) {
+            public void call(Problem problem) {
                 TimusJudgeSystemTest.this.problem = problem;
                 loaded.countDown();
             }
@@ -60,14 +61,13 @@ public class TimusJudgeSystemTest {
                         "   }\n" +
                         "}")
                 .build();
-        onlineJudgeSystem.getVerificationService().verify(commit, new VerificationService.Callback() {
+        onlineJudgeSystem.getVerificationService().verify(commit, new Callback<Verdict>() {
             @Override
-            public void onVerdictReady(Verdict verdict) {
+            public void call(Verdict verdict) {
                 TimusJudgeSystemTest.this.verdict = verdict;
                 verdictReady.countDown();
             }
         });
         verdictReady.await();
-        int i = 1;
     }
 }

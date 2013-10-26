@@ -3,7 +3,8 @@ package com.firefrydev.ojh.timus;
 import com.firefrydev.ojh.core.Commit;
 import com.firefrydev.ojh.core.Verdict;
 import com.firefrydev.ojh.core.VerificationService;
-import com.firefrydev.ojh.timus.util.RetryOnFailRunnable;
+import com.firefrydev.ojh.utils.Callback;
+import com.firefrydev.ojh.utils.RetryOnFailRunnable;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,15 +20,15 @@ public class TimusVerificationService implements VerificationService {
     }
 
     @Override
-    public void verify(Commit commit, Callback callback) {
+    public void verify(Commit commit, Callback<Verdict> callback) {
         executorService.execute(new SentCommitRunnable(commit, callback));
     }
 
     private class SentCommitRunnable extends RetryOnFailRunnable {
         private final Commit commit;
-        private final Callback callback;
+        private final Callback<Verdict> callback;
 
-        public SentCommitRunnable(Commit commit, Callback callback) {
+        public SentCommitRunnable(Commit commit, Callback<Verdict> callback) {
             super(maxTryCount);
             this.commit = commit;
             this.callback = callback;
@@ -46,9 +47,9 @@ public class TimusVerificationService implements VerificationService {
     private class LoadVerdictRunnable extends RetryOnFailRunnable {
         private final Commit commit;
         private final String commitId;
-        private final Callback callback;
+        private final Callback<Verdict> callback;
 
-        public LoadVerdictRunnable(Commit commit, String commitId, Callback callback) {
+        public LoadVerdictRunnable(Commit commit, String commitId, Callback<Verdict> callback) {
             super(maxTryCount);
             this.commit = commit;
             this.commitId = commitId;
@@ -57,7 +58,7 @@ public class TimusVerificationService implements VerificationService {
 
         protected void unsafeRun() throws IOException {
             Verdict verdict = TimusVerifier.loadVerdict(commit, commitId);
-            callback.onVerdictReady(verdict);
+            callback.call(verdict);
         }
 
         protected void retry() {
