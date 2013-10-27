@@ -1,6 +1,6 @@
 package com.firefrydev.ojh.lang.java.utils;
 
-import com.firefrydev.ojh.local.Source;
+import com.firefrydev.ojh.core.Source;
 import org.apache.commons.io.FileUtils;
 
 import javax.tools.JavaCompiler;
@@ -14,18 +14,18 @@ import java.util.Arrays;
 
 public class ClassLoadUtils {
 
-    public static final File TEMP_DIR = new File(new File(System.getProperty("user.home"), ".ffd"), "temp");
+    public static final File TEMP_DIR = new File(new File(System.getProperty("user.home"), ".ojh"), ".temp");
 
     public static Class load(Source source) throws Exception {
         File tempDir = TEMP_DIR;
         FileUtils.forceMkdir(tempDir);
-        File file = new File(tempDir, source.getClassName() + ".java");
+        File file = new File(tempDir, source.getFileName());
         if (file.exists()) {
             FileUtils.forceDelete(file);
         }
         file.createNewFile();
         FileUtils.writeStringToFile(file, source.getSourceCode());
-        return load(tempDir, source.getClassName());
+        return load(tempDir, source.getFileName().replace(".java", ""));
     }
 
     public static Class load(File location, String className) throws Exception {

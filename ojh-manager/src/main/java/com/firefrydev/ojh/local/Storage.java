@@ -1,5 +1,6 @@
 package com.firefrydev.ojh.local;
 
+import com.firefrydev.ojh.core.Source;
 import com.firefrydev.ojh.core.Test;
 import com.firefrydev.ojh.utils.Callback;
 
@@ -9,7 +10,7 @@ public interface Storage {
 
     void saveSource(String problemId, Source sourceTemplate, Runnable callback);
 
-    void getSource(String problemId, String name, Callback<Source> callback);
+    void getSource(String problemId, String fileName, Callback<Source> callback);
 
     void saveTests(String id, List<Test> tests, Runnable callback);
 

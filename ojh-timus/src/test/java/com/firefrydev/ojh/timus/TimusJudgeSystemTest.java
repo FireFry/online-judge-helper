@@ -7,7 +7,8 @@ import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class TimusJudgeSystemTest {
     public static final int TIMEOUT = 5000;

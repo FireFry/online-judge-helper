@@ -3,7 +3,6 @@ package com.firefrydev.ojh.lang.java;
 import com.firefrydev.ojh.core.*;
 import com.firefrydev.ojh.lang.java.utils.ClassLoadUtils;
 import com.firefrydev.ojh.local.LanguageProvider;
-import com.firefrydev.ojh.local.Source;
 import com.firefrydev.ojh.utils.Callback;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -30,7 +29,7 @@ public class JavaLanguageProvider implements LanguageProvider {
     public Source createSourceTemplate(String problemId) {
         try {
             String sourceCode = FileUtils.readFileToString(new File("templates.txt")).replaceAll(ID, problemId);
-            return new Source(getSourceName(problemId), sourceCode);
+            return new Source(getSourceFileName(problemId), sourceCode);
         } catch (IOException e) {
             LOGGER.error("Exception while reading template file", e);
             return null;
@@ -69,12 +68,8 @@ public class JavaLanguageProvider implements LanguageProvider {
         }
     }
 
-    private String getClassName(String problemId) {
-        return CLASS_NAME_TEMPLATE.replaceAll(ID, problemId);
-    }
-
     @Override
-    public String getSourceName(String problemId) {
-        return getClassName(problemId) + EXTENSION;
+    public String getSourceFileName(String problemId) {
+        return CLASS_NAME_TEMPLATE.replaceAll(ID, problemId) + EXTENSION;
     }
 }

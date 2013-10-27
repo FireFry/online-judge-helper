@@ -1,7 +1,5 @@
 package com.firefrydev.ojh.core;
 
-import com.firefrydev.ojh.core.Language;
-
 public class Commit {
     private final String authorId;
     private final String problemId;

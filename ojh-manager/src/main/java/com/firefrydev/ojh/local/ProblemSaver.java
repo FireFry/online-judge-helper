@@ -1,6 +1,7 @@
 package com.firefrydev.ojh.local;
 
 import com.firefrydev.ojh.core.Problem;
+import com.firefrydev.ojh.core.Source;
 import com.firefrydev.ojh.core.Test;
 import com.firefrydev.ojh.utils.Callback;
 

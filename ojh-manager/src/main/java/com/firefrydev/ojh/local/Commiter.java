@@ -1,6 +1,7 @@
 package com.firefrydev.ojh.local;
 
 import com.firefrydev.ojh.core.Commit;
+import com.firefrydev.ojh.core.Source;
 import com.firefrydev.ojh.core.Verdict;
 import com.firefrydev.ojh.utils.Callback;
 
@@ -21,7 +22,7 @@ class Commiter {
     }
 
     public void commit() {
-        manager.getStorage().getSource(problemId, manager.getLanguageProvider().getSourceName(problemId), new Callback<Source>() {
+        manager.getStorage().getSource(problemId, manager.getLanguageProvider().getSourceFileName(problemId), new Callback<Source>() {
             @Override
             public void call(Source source) {
                 Commit commit = Commit.builder()

@@ -1,7 +1,7 @@
 package com.firefrydev.ojh.stiorage.file;
 
+import com.firefrydev.ojh.core.Source;
 import com.firefrydev.ojh.core.Test;
-import com.firefrydev.ojh.local.Source;
 import com.firefrydev.ojh.local.Storage;
 import com.firefrydev.ojh.utils.Callback;
 import org.apache.commons.io.FileUtils;
@@ -30,14 +30,15 @@ public class FileStorage implements Storage {
 
     @Override
     public void saveSource(String problemId, Source source, Runnable callback) {
-        safeWriteToFile(new File(new File(storageDirectory, problemId), source.getClassName()), source.getSourceCode());
+        safeWriteToFile(new File(new File(storageDirectory, problemId), source.getFileName()), source.getSourceCode());
+        callback.run();
     }
 
     @Override
-    public void getSource(String problemId, String name, Callback<Source> callback) {
+    public void getSource(String problemId, String fileName, Callback<Source> callback) {
         try {
-            String sourceCode = FileUtils.readFileToString(new File(new File(storageDirectory, problemId), name));
-            callback.call(new Source(name, sourceCode));
+            String sourceCode = FileUtils.readFileToString(new File(new File(storageDirectory, problemId), fileName));
+            callback.call(new Source(fileName, sourceCode));
         } catch (IOException e) {
             LOGGER.error("Failed to save source", e);
         }
@@ -48,10 +49,11 @@ public class FileStorage implements Storage {
         File testsFolder = testsFolder(problemId);
         int id = 0;
         for (Test test : tests) {
-            File testFolder = new File(testsFolder, String.valueOf(id));
+            File testFolder = new File(testsFolder, String.valueOf(id++));
             safeWriteToFile(new File(testFolder, TEST_INPUT_FILE), test.getInput());
             safeWriteToFile(new File(testFolder, TEST_OUTPUT_FILE), test.getOutput());
         }
+        callback.run();
     }
 
     @Override

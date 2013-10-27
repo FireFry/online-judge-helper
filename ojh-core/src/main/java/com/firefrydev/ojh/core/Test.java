@@ -19,4 +19,24 @@ public class Test {
     public String getOutput() {
         return output;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Test test = (Test) o;
+
+        if (!input.equals(test.input)) return false;
+        if (!output.equals(test.output)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = input.hashCode();
+        result = 31 * result + output.hashCode();
+        return result;
+    }
 }

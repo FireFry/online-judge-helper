@@ -2,6 +2,7 @@ package com.firefrydev.ojh.local;
 
 import com.firefrydev.ojh.core.ExtendedVerdict;
 import com.firefrydev.ojh.core.Language;
+import com.firefrydev.ojh.core.Source;
 import com.firefrydev.ojh.core.Test;
 import com.firefrydev.ojh.utils.Callback;
 
@@ -15,6 +16,6 @@ public interface LanguageProvider {
 
     void verify(Source source, Collection<Test> tests, Callback<ExtendedVerdict> callback);
 
-    String getSourceName(String problemId);
+    String getSourceFileName(String problemId);
 
 }

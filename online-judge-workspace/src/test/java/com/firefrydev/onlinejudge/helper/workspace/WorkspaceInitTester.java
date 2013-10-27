@@ -4,7 +4,6 @@ import com.firefrydev.onlinejudge.helper.core.Author;
 import com.firefrydev.onlinejudge.helper.core.Language;
 import com.firefrydev.onlinejudge.helper.timus.TimusSystem;
 import org.apache.commons.io.FileUtils;
-import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
