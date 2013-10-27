@@ -9,7 +9,7 @@ public interface Storage {
 
     void saveSource(String problemId, Source sourceTemplate, Runnable callback);
 
-    void getSource(String problemId, String name, Callback<String> callback);
+    void getSource(String problemId, String name, Callback<Source> callback);
 
     void saveTests(String id, List<Test> tests, Runnable callback);
 

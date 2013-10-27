@@ -21,13 +21,13 @@ class Commiter {
     }
 
     public void commit() {
-        manager.getStorage().getSource(problemId, manager.getLanguageProvider().getSourceName(problemId), new Callback<String>() {
+        manager.getStorage().getSource(problemId, manager.getLanguageProvider().getSourceName(problemId), new Callback<Source>() {
             @Override
-            public void call(String sourceCode) {
+            public void call(Source source) {
                 Commit commit = Commit.builder()
                         .setAuthorId(authorId)
                         .setProblemId(problemId)
-                        .setSourceCode(sourceCode)
+                        .setSourceCode(source.getSourceCode())
                         .setLanguage(manager.getLanguageProvider().language())
                         .build();
                 manager.getSystem().getVerificationService().verify(commit, callback);

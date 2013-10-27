@@ -38,9 +38,9 @@ public class JavaLanguageProvider implements LanguageProvider {
     }
 
     @Override
-    public void verify(String problemId, String source, Collection<Test> tests, Callback<ExtendedVerdict> callback) {
+    public void verify(Source source, Collection<Test> tests, Callback<ExtendedVerdict> callback) {
         try {
-            Class problemClass = ClassLoadUtils.load(getClassName(problemId), source);
+            Class problemClass = ClassLoadUtils.load(source);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             List<FailedTest> failedTests = new LinkedList<FailedTest>();
             for (Test test : tests) {

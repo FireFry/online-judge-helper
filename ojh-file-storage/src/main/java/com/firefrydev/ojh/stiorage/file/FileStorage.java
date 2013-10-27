@@ -30,13 +30,14 @@ public class FileStorage implements Storage {
 
     @Override
     public void saveSource(String problemId, Source source, Runnable callback) {
-        safeWriteToFile(new File(new File(storageDirectory, problemId), source.getName()), source.getSourceCode());
+        safeWriteToFile(new File(new File(storageDirectory, problemId), source.getClassName()), source.getSourceCode());
     }
 
     @Override
-    public void getSource(String problemId, String name, Callback<String> callback) {
+    public void getSource(String problemId, String name, Callback<Source> callback) {
         try {
-            callback.call(FileUtils.readFileToString(new File(new File(storageDirectory, problemId), name)));
+            String sourceCode = FileUtils.readFileToString(new File(new File(storageDirectory, problemId), name));
+            callback.call(new Source(name, sourceCode));
         } catch (IOException e) {
             LOGGER.error("Failed to save source", e);
         }

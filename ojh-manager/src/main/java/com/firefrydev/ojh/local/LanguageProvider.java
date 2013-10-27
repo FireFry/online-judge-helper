@@ -13,7 +13,7 @@ public interface LanguageProvider {
 
     Source createSourceTemplate(String problemId);
 
-    void verify(String problemId, String source, Collection<Test> tests, Callback<ExtendedVerdict> callback);
+    void verify(Source source, Collection<Test> tests, Callback<ExtendedVerdict> callback);
 
     String getSourceName(String problemId);
 

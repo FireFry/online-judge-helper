@@ -14,7 +14,7 @@ class Tester {
     private final String problemId;
     private final Callback<ExtendedVerdict> callback;
 
-    private volatile String source;
+    private volatile Source source;
     private volatile List<Test> tests;
     private final AtomicInteger leftoverComponents = new AtomicInteger(TOTAL_COMPONENTS_COUNT);
 
@@ -28,9 +28,9 @@ class Tester {
     }
 
     public void test() {
-        manager.getStorage().getSource(problemId, manager.getLanguageProvider().getSourceName(problemId), new Callback<String>() {
+        manager.getStorage().getSource(problemId, manager.getLanguageProvider().getSourceName(problemId), new Callback<Source>() {
             @Override
-            public void call(String source) {
+            public void call(Source source) {
                 Tester.this.source = source;
                 onComponentLoaded();
             }
@@ -46,7 +46,7 @@ class Tester {
 
     private void onComponentLoaded() {
         if (leftoverComponents.decrementAndGet() < 1) {
-            manager.getLanguageProvider().verify(problemId, source, tests, callback);
+            manager.getLanguageProvider().verify(source, tests, callback);
         }
     }
 }

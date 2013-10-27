@@ -1,19 +1,19 @@
 package com.firefrydev.ojh.local;
 
 public class Source {
-    private final String name;
+    private final String className;
     private final String sourceCode;
 
-    public Source(String name, String sourceCode) {
-        if (name == null || sourceCode == null) {
+    public Source(String className, String sourceCode) {
+        if (className == null || sourceCode == null) {
             throw new NullPointerException();
         }
-        this.name = name;
+        this.className = className;
         this.sourceCode = sourceCode;
     }
 
-    public String getName() {
-        return name;
+    public String getClassName() {
+        return className;
     }
 
     public String getSourceCode() {

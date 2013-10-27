@@ -1,5 +1,6 @@
 package com.firefrydev.ojh.lang.java.utils;
 
+import com.firefrydev.ojh.local.Source;
 import org.apache.commons.io.FileUtils;
 
 import javax.tools.JavaCompiler;
@@ -7,7 +8,6 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -16,16 +16,16 @@ public class ClassLoadUtils {
 
     public static final File TEMP_DIR = new File(new File(System.getProperty("user.home"), ".ffd"), "temp");
 
-    public static Class load(String name, String source) throws Exception {
+    public static Class load(Source source) throws Exception {
         File tempDir = TEMP_DIR;
         FileUtils.forceMkdir(tempDir);
-        File file = new File(tempDir, name + ".java");
+        File file = new File(tempDir, source.getClassName() + ".java");
         if (file.exists()) {
             FileUtils.forceDelete(file);
         }
         file.createNewFile();
-        FileUtils.writeStringToFile(file, source);
-        return load(tempDir, name);
+        FileUtils.writeStringToFile(file, source.getSourceCode());
+        return load(tempDir, source.getClassName());
     }
 
     public static Class load(File location, String className) throws Exception {
