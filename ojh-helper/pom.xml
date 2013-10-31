@@ -9,22 +9,32 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>ojh-timus</artifactId>
+	<artifactId>ojh-helper</artifactId>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.7.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>1.3.2</version>
+			<groupId>com.firefrydev.online-judge</groupId>
+			<artifactId>ojh-core</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.firefrydev.online-judge</groupId>
-			<artifactId>ojh-core</artifactId>
+			<artifactId>ojh-manager</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.firefrydev.online-judge</groupId>
+			<artifactId>ojh-file-storage</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.firefrydev.online-judge</groupId>
+			<artifactId>ojh-java</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.firefrydev.online-judge</groupId>
+			<artifactId>ojh-timus</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
